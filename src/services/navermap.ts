@@ -1,3 +1,4 @@
+import { NaverMapMarkerOptions, NaverMapsService } from "types/naverMap";
 import { NaverMapConfig } from "../../types/naverMapConfig";
 
 declare const global: {
@@ -8,28 +9,25 @@ export interface NaverService {
   maps: NaverMapsService;
 }
 
-interface NaverMapOptions {
+export interface NaverMapOptions {
   center?: { x: number; y: number } | any;
-}
-
-interface NaverMapsService {
-  LatLng: new (lat: number, lng: number) => unknown;
-  Map: new (
-    mapDiv: string | HTMLElement,
-    mapOptions: NaverMapOptions
-  ) => unknown;
+  zoom?: number;
 }
 
 let loadingPromise: Promise<NaverMapsService> | undefined;
 
 export default class NaverMap {
   config: NaverMapConfig;
+  mapsService: NaverMapsService | undefined;
+  LatLng: any;
+  map: naver.maps.Map | undefined;
 
   constructor(config: NaverMapConfig) {
     this.config = config;
   }
 
-  private async loadScript(config: NaverMapConfig) {
+  async loadScript(config: NaverMapConfig) {
+    console.log("loading script", loadingPromise);
     if (!loadingPromise) {
       loadingPromise = new Promise((resolve, reject) => {
         const $script = document.createElement("script");
@@ -50,15 +48,33 @@ export default class NaverMap {
     return loadingPromise;
   }
 
-  async drawMap(mapOptions: NaverMapOptions) {
-    const naverMapService = await this.loadScript(this.config);
+  async drawMap(mapRef: HTMLDivElement, mapOptions: NaverMapOptions) {
+    if (!this.mapsService) {
+      const mapService = await this.loadScript(this.config);
+      this.mapsService = mapService;
+      console.log(mapService);
+    }
+    const naverMapService = this.mapsService;
 
-    return new naverMapService.Map(
-      "map",
-      mapOptions?.center?.x ?? {
-        center: new naverMapService.LatLng(37.5172, 127.0473),
-        zoom: 14,
-      }
+    const map = new naverMapService.Map(
+      mapRef,
+      mapOptions?.center?.x
+        ? mapOptions
+        : {
+            center: new naverMapService.LatLng(37.5172, 127.0473),
+            zoom: 14,
+          }
     );
+    this.map = map;
+  }
+
+  drawMarker(markerOptions: NaverMapMarkerOptions) {
+    const { mapsService } = this;
+    console.log(mapsService);
+    if (!mapsService) return;
+  }
+
+  removeMap(map: naver.maps.Map) {
+    map.destroy();
   }
 }

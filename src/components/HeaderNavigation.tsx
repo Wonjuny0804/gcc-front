@@ -12,7 +12,7 @@ const HeaderNavigation = () => {
 
   return (
     <nav
-      className={`px-4 h-[60px] flex items-center justify-between w-full z-[100] 
+      className={`px-4 h-[60px] flex items-center justify-between w-full z-[101] 
       fixed
       `}
     >
@@ -32,9 +32,10 @@ const HeaderNavigation = () => {
         className={`${
           isOpen ? "absolute" : "hidden"
         } top-0 left-0 bg-[rgba(0,0,0,0.6)] w-screen h-screen `}
+        onClick={() => setIsOpen(false)}
       ></div>
       <ul
-        className={`p-5 flex flex-col gap-4
+        className={`p-5 pt-12 flex flex-col gap-4
         absolute h-screen bg-white font-spoqa top-0
          transition-all duration-300 ${
            isOpen ? "right-0" : "right-[-240px]"
@@ -46,15 +47,20 @@ const HeaderNavigation = () => {
             className="font-spoqa"
             onClick={() => setIsOpen(false)}
           >
-            홈
+            🏠 홈
           </Link>
         </li>
         <li>
           <Link href={`/about`} onClick={() => setIsOpen(false)}>
-            소개
+            😀 소개
           </Link>
         </li>
-        <li className={`absolute right-5`}>
+        <li>
+          <Link href={`/nomadSeoul`} onClick={() => setIsOpen(false)}>
+            🗺️ 지도
+          </Link>
+        </li>
+        <li className={`absolute right-5 top-5`}>
           <button type="button" onClick={handleButtonClick}>
             <XMarkIcon width={24} />
           </button>
