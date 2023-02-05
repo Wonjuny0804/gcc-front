@@ -48,7 +48,11 @@ export default class NaverMap {
     return loadingPromise;
   }
 
-  async drawMap(mapRef: HTMLDivElement, mapOptions: NaverMapOptions) {
+  async drawMap(
+    mapRef: HTMLDivElement,
+    mapOptions: NaverMapOptions,
+    markers?: any[]
+  ) {
     if (!this.mapsService) {
       const mapService = await this.loadScript(this.config);
       this.mapsService = mapService;
@@ -65,13 +69,43 @@ export default class NaverMap {
             zoom: 14,
           }
     );
+
     this.map = map;
+    if (!markers) return;
+
+    for (let i = 0; i < markers.length; i++) {
+      new naverMapService.Marker({
+        position: new naverMapService.LatLng(
+          markers[i]?.position?.lat,
+          markers[i]?.position?.lng
+        ),
+        map,
+        ...(markers[i]?.icon && {
+          icon: {
+            ...markers[i]?.icon,
+          },
+        }),
+      });
+    }
+
+    // TODO: So this would not work... why?
+    // this.drawMarker({
+    //   position: new naverMapService.LatLng(
+    //     37.52194423562938,
+    //     127.05502619060778
+    //   ),
+    // });
   }
 
+  // TODO: This would not work... why?
   drawMarker(markerOptions: NaverMapMarkerOptions) {
     const { mapsService } = this;
-    console.log(mapsService);
     if (!mapsService) return;
+
+    new mapsService.Marker({
+      position: new mapsService.LatLng(37.52194423562938, 127.05502619060778),
+      map: this.map,
+    });
   }
 
   removeMap(map: naver.maps.Map) {

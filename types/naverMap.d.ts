@@ -14,6 +14,7 @@ export interface NaverMapsService {
   Marker: new (markerOptions: unknown) => unknown;
   Size: new (width: number, height: number) => unknown;
   Point: new (x: number, y: number) => unknown;
+  Size: new (width: number, height: number) => unknown;
 }
 
 export interface NaverMapsPoints {
@@ -30,7 +31,6 @@ export type Coord = NaverMapsLatLng;
 
 export interface NaverMapMarkerOptions {
   position: Coord;
-  map: naver.maps.Map;
   draggable?: boolean;
   clickable?: boolean;
   animations?: unknown; // TODO:
