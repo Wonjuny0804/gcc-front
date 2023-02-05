@@ -1,5 +1,6 @@
 import { NaverMapMarkerOptions, NaverMapsService } from "types/naverMap";
 import { NaverMapConfig } from "../../types/naverMapConfig";
+import getMarkerMarkup from "@/lib/navermap/customMarker";
 
 declare const global: {
   naver: NaverService;
@@ -80,11 +81,13 @@ export default class NaverMap {
           markers[i]?.position?.lng
         ),
         map,
-        ...(markers[i]?.icon && {
-          icon: {
-            ...markers[i]?.icon,
+        icon: {
+          content: getMarkerMarkup(markers[i].type),
+          anchor: {
+            x: 25,
+            y: 50,
           },
-        }),
+        },
       });
     }
 
