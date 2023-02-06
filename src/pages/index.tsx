@@ -1,6 +1,11 @@
-import HeaderNavigation from "@/components/HeaderNavigation";
-import NaverMap from "@/components/NaverMap";
+import React from "react";
 
 export default function Home() {
   return <></>;
 }
+
+export const getStaticProps = async () => {
+  return {
+    props: {},
+  };
+};

@@ -59,7 +59,6 @@ export default class NaverMap {
     if (!this.mapsService) {
       const mapService = await this.loadScript(this.config);
       this.mapsService = mapService;
-      console.log(mapService);
     }
     const naverMapService = this.mapsService;
 
@@ -76,50 +75,14 @@ export default class NaverMap {
     this.map = map;
     if (!markers) return;
 
-    const navermapMarkers: naver.maps.Marker[] = [];
-    for (let i = 0; i < markers.length; i++) {
-      const marker = new naverMapService.Marker({
-        position: new naverMapService.LatLng(
-          markers[i]?.position?.lat,
-          markers[i]?.position?.lng
-        ),
-        map,
-        icon: {
-          content: getMarkerMarkup(markers[i].type),
-          anchor: {
-            x: 25,
-            y: 50,
-          },
-        },
-      });
-      navermapMarkers.push(marker);
-    }
+    const navermapMarkers = this.createNaverMapMarkers(markers, map);
+    this.addMarkersEventListeners(navermapMarkers);
 
     naverMapService.Event.addListener(map, "zoom_changed", () => {
       this.updateMarkers(map, navermapMarkers);
     });
-
     naverMapService.Event.addListener(map, "dragend", () => {
       this.updateMarkers(map, navermapMarkers);
-    });
-
-    // TODO: So this would not work... why?
-    // this.drawMarker({
-    //   position: new naverMapService.LatLng(
-    //     37.52194423562938,
-    //     127.05502619060778
-    //   ),
-    // });
-  }
-
-  // TODO: This would not work... why?
-  drawMarker(markerOptions: NaverMapMarkerOptions) {
-    const { mapsService } = this;
-    if (!mapsService) return;
-
-    new mapsService.Marker({
-      position: new mapsService.LatLng(37.52194423562938, 127.05502619060778),
-      map: this.map,
     });
   }
 
@@ -153,6 +116,45 @@ export default class NaverMap {
   }
 
   markerClickHandler(marker: naver.maps.Marker) {
-    console.log("marker clicked");
+    console.log("marker clicked", marker);
+    const map = marker.getMap();
+    map?.panTo(marker?.getOptions()?.position, {
+      duration: 250,
+      easing: "linear",
+    });
+  }
+
+  createNaverMapMarkers(markers: any[], map: naver.maps.Map) {
+    if (!this.mapsService) return [];
+
+    const navermapMarkers: naver.maps.Marker[] = [];
+    for (let i = 0; i < markers.length; i++) {
+      const marker = new this.mapsService.Marker({
+        position: new this.mapsService.LatLng(
+          markers[i]?.position?.lat,
+          markers[i]?.position?.lng
+        ),
+        map,
+        icon: {
+          content: getMarkerMarkup(markers[i].type),
+          anchor: {
+            x: 25,
+            y: 50,
+          },
+        },
+      });
+      navermapMarkers.push(marker);
+    }
+
+    return navermapMarkers;
+  }
+
+  addMarkersEventListeners(markers: naver.maps.Marker[]) {
+    for (let i = 0; i < markers.length; i++) {
+      const marker = markers[i];
+      naver.maps.Event.addListener(marker, "click", () => {
+        this.markerClickHandler(marker);
+      });
+    }
   }
 }
