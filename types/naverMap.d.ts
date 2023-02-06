@@ -36,3 +36,5 @@ export interface NaverMapMarkerOptions {
   animations?: unknown; // TODO:
   icon?: string | ImageIcon | SymbolIcon | HtmlIcon;
 }
+
+export interface NaverMapsMarkerService {}

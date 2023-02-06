@@ -1,4 +1,4 @@
-import { NaverMapMarkerOptions, NaverMapsService } from "types/naverMap";
+import { NaverMapMarkerOptions } from "types/naverMap";
 import { NaverMapConfig } from "../../types/naverMapConfig";
 import getMarkerMarkup from "@/lib/navermap/customMarker";
 
@@ -7,7 +7,7 @@ declare const global: {
 };
 
 export interface NaverService {
-  maps: NaverMapsService;
+  maps: typeof naver.maps;
 }
 
 export interface NaverMapOptions {
@@ -15,7 +15,9 @@ export interface NaverMapOptions {
   zoom?: number;
 }
 
-let loadingPromise: Promise<NaverMapsService> | undefined;
+type NaverMapsService = typeof naver.maps;
+
+let loadingPromise: Promise<typeof naver.maps> | undefined;
 
 export default class NaverMap {
   config: NaverMapConfig;
@@ -74,8 +76,9 @@ export default class NaverMap {
     this.map = map;
     if (!markers) return;
 
+    const navermapMarkers: naver.maps.Marker[] = [];
     for (let i = 0; i < markers.length; i++) {
-      new naverMapService.Marker({
+      const marker = new naverMapService.Marker({
         position: new naverMapService.LatLng(
           markers[i]?.position?.lat,
           markers[i]?.position?.lng
@@ -89,7 +92,16 @@ export default class NaverMap {
           },
         },
       });
+      navermapMarkers.push(marker);
     }
+
+    naverMapService.Event.addListener(map, "zoom_changed", () => {
+      this.updateMarkers(map, navermapMarkers);
+    });
+
+    naverMapService.Event.addListener(map, "dragend", () => {
+      this.updateMarkers(map, navermapMarkers);
+    });
 
     // TODO: So this would not work... why?
     // this.drawMarker({
@@ -113,5 +125,34 @@ export default class NaverMap {
 
   removeMap(map: naver.maps.Map) {
     map.destroy();
+  }
+
+  updateMarkers(map: naver.maps.Map, markers: naver.maps.Marker[]) {
+    const mapBounds = map.getBounds() as naver.maps.LatLngBounds;
+
+    for (let i = 0; i < markers.length; i++) {
+      const marker = markers[i];
+      const position = marker.getPosition();
+
+      if (mapBounds.hasLatLng(position)) {
+        this.showMarker(map, marker);
+      } else {
+        this.hideMarker(marker);
+      }
+    }
+  }
+
+  showMarker(map: naver.maps.Map, marker: naver.maps.Marker) {
+    if (marker?.getMap()) return; // if marker is already on map, do nothing
+    marker.setMap(map);
+  }
+
+  hideMarker(marker: naver.maps.Marker) {
+    if (!marker.getMap()) return; // if marker is already removed, do nothing
+    marker.setMap(null);
+  }
+
+  markerClickHandler(marker: naver.maps.Marker) {
+    console.log("marker clicked");
   }
 }
