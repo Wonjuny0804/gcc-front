@@ -168,3 +168,14 @@ a {
   box-sizing: border-box;
   padding: 4px;
 }
+
+/* naver map custom overlay styles */
+.naver-map-custom-infowindow {
+  width: 95vw;
+  height: 30vh;
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(2px);
+  mix-blend-mode: normal;
+  border-radius: 6px;
+  padding: 16px;
+}

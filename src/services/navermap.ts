@@ -30,7 +30,6 @@ export default class NaverMap {
   }
 
   async loadScript(config: NaverMapConfig) {
-    console.log("loading script", loadingPromise);
     if (!loadingPromise) {
       loadingPromise = new Promise((resolve, reject) => {
         const $script = document.createElement("script");
@@ -76,7 +75,8 @@ export default class NaverMap {
     if (!markers) return;
 
     const navermapMarkers = this.createNaverMapMarkers(markers, map);
-    this.addMarkersEventListeners(navermapMarkers);
+    const navermapInfoWindows = this.createInfoWindow(markers);
+    this.addMarkersEventListeners(navermapMarkers, navermapInfoWindows);
 
     naverMapService.Event.addListener(map, "zoom_changed", () => {
       this.updateMarkers(map, navermapMarkers);
@@ -116,7 +116,6 @@ export default class NaverMap {
   }
 
   markerClickHandler(marker: naver.maps.Marker) {
-    console.log("marker clicked", marker);
     const map = marker.getMap();
     map?.panTo(marker?.getOptions()?.position, {
       duration: 250,
@@ -138,8 +137,8 @@ export default class NaverMap {
         icon: {
           content: getMarkerMarkup(markers[i].type),
           anchor: {
-            x: 25,
-            y: 50,
+            x: 18,
+            y: 48,
           },
         },
       });
@@ -149,12 +148,56 @@ export default class NaverMap {
     return navermapMarkers;
   }
 
-  addMarkersEventListeners(markers: naver.maps.Marker[]) {
+  addMarkersEventListeners(
+    markers: naver.maps.Marker[],
+    infoWindows: naver.maps.InfoWindow[]
+  ) {
     for (let i = 0; i < markers.length; i++) {
       const marker = markers[i];
       naver.maps.Event.addListener(marker, "click", () => {
         this.markerClickHandler(marker);
+        if (!infoWindows) return;
+
+        const infoWindow = infoWindows[i];
+        if (infoWindow.getMap()) {
+          infoWindow.close();
+        } else {
+          const map = marker.getMap();
+          if (map !== null) infoWindow.open(map, marker);
+        }
       });
     }
+  }
+
+  createInfoWindow(markers: any[]) {
+    if (!this.mapsService) return [];
+
+    const navermapInfoWindows: naver.maps.InfoWindow[] = [];
+    for (let i = 0; i < markers.length; i++) {
+      const infoWindow = new this.mapsService.InfoWindow({
+        content: [
+          `<div class="naver-map-custom-infowindow">`,
+          `${markers[i].place?.name}`,
+          `</div>`,
+        ].join(""),
+        position: new this.mapsService.LatLng(
+          markers[i]?.position?.lat,
+          markers[i]?.position?.lng
+        ),
+        pixelOffset: {
+          x: 0,
+          y: -6,
+        },
+        anchorSize: {
+          width: 0,
+          height: 0,
+        },
+        backgroundColor: "transparent",
+        borderWidth: 0,
+      });
+      navermapInfoWindows.push(infoWindow);
+    }
+
+    return navermapInfoWindows;
   }
 }
