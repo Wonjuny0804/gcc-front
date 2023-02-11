@@ -1,3 +1,6 @@
+import { Address } from "./address";
+import { ImageData } from "./image";
+
 export interface NaverMapPointLiteral {
   x: number;
   y: number;
@@ -38,3 +41,41 @@ export interface NaverMapMarkerOptions {
 }
 
 export interface NaverMapsMarkerService {}
+
+export interface WeekDate {
+  en: string;
+  ko: string;
+  id: number;
+}
+
+export interface OpeningHours {
+  day: WeekDate;
+  open: string;
+  close: string;
+}
+
+interface PlaceImageData extends ImageData {
+  order: number;
+}
+
+export interface MarkerPlace {
+  name: string;
+  subtitle: string;
+  openingHours: OpeningHours[];
+  images: PlaceImageData[];
+  phoneNumber: string;
+  paymentMethods: string[];
+  address: Address;
+  description: string;
+  socialMedia: {
+    instagram: string;
+    webUrl: string;
+  };
+}
+
+export interface MapMarker {
+  position: Coord;
+  type: string;
+  place: MarkerPlace;
+  icon?: naver.maps.ImageIcon | naver.maps.SymbolIcon | naver.maps.HtmlIcon;
+}

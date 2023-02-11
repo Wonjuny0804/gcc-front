@@ -1,6 +1,7 @@
-import { NaverMapMarkerOptions } from "types/naverMap";
+import { MapMarker, NaverMapMarkerOptions } from "types/naverMap";
 import { NaverMapConfig } from "../../types/naverMapConfig";
 import getMarkerMarkup from "@/lib/navermap/customMarker";
+import { formattedAddress } from "@/lib/navermap/addressLib/addressLib";
 
 declare const global: {
   naver: NaverService;
@@ -169,15 +170,20 @@ export default class NaverMap {
     }
   }
 
-  createInfoWindow(markers: any[]) {
+  createInfoWindow(markers: MapMarker[]) {
     if (!this.mapsService) return [];
 
     const navermapInfoWindows: naver.maps.InfoWindow[] = [];
     for (let i = 0; i < markers.length; i++) {
+      const place = markers[i].place;
       const infoWindow = new this.mapsService.InfoWindow({
         content: [
           `<div class="naver-map-custom-infowindow">`,
-          `${markers[i].place?.name}`,
+          `<div class="info-section__title"><h3 class="info-section__name">${place?.name}</h3><span class="open">영엽 중</span></div>`,
+          `<p class="info-section__address">${formattedAddress(
+            place.address
+          )}</p>`,
+          `<p class="info-section__desc">${place.description}</p>`,
           `</div>`,
         ].join(""),
         position: new this.mapsService.LatLng(

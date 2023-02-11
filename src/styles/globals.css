@@ -129,6 +129,7 @@ body {
   max-width: 100vw;
   overflow-x: hidden;
   background-color: white;
+  min-width: 325px;
 }
 
 a {
@@ -172,10 +173,62 @@ a {
 /* naver map custom overlay styles */
 .naver-map-custom-infowindow {
   width: 95vw;
-  height: 30vh;
-  background-color: rgba(255, 255, 255, 0.7);
+  /* height: 120px; */
+  background-color: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(2px);
   mix-blend-mode: normal;
-  border-radius: 6px;
+  border-radius: 12px;
   padding: 16px;
+}
+
+.naver-map-custom-infowindow .info-section {
+  padding: 6px;
+}
+
+.naver-map-custom-infowindow .info-section__title {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+}
+
+.naver-map-custom-infowindow .info-section__title .info-section__name {
+  font-family: "Spoqa Han Sans Neo Medium";
+  font-size: 18px;
+}
+
+.naver-map-custom-infowindow .info-section__title .open {
+  font-family: "Spoqa Han Sans Neo Medium";
+  font-size: 18px;
+}
+
+.naver-map-custom-infowindow .info-section__address {
+  font-family: "Spoqa Han Sans Neo Regular";
+  font-size: 12px;
+  margin-bottom: 12px;
+}
+
+.naver-map-custom-infowindow .info-section .info-section__time {
+  font-family: "Spoqa Han Sans Neo Regular";
+  font-size: 12px;
+}
+
+.naver-map-custom-infowindow .info-section__title .open {
+  background-color: #2563eb;
+  color: #ffffff;
+  border-radius: 12px;
+  font-family: "Spoqa Han Sans Neo Medium";
+  width: fit-content;
+  padding: 2px 6px;
+  font-size: 12px;
+}
+
+.naver-map-custom-infowindow .info-section__desc {
+  display: -webkit-box;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  font-family: "Spoqa Han Sans Neo Light";
+  font-size: 14px;
+  /* white-space: nowrap; */
 }

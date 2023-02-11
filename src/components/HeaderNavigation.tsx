@@ -12,7 +12,7 @@ const HeaderNavigation = () => {
 
   return (
     <nav
-      className={`px-4 h-[60px] flex items-center justify-between w-full z-[101] 
+      className={`px-4 h-[60px] flex items-center justify-between w-full z-[101] min-w-[325px]
       fixed
       `}
     >
